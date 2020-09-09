@@ -35,6 +35,33 @@ def index():
 
 	home = WebDetails()
 
+	usertext = "Hello"
+
+
+
+	return render_template("index.html", home=home)
+
+
+
+
+
+@app.route("/login")
+def login():
+
+	home = WebDetails()
+
+
+
+
+	return render_template("index.html", home=home)
+
+
+
+@app.route("/register")
+def register():
+
+	home = WebDetails()
+
 
 
 
