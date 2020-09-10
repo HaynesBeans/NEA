@@ -11,6 +11,7 @@ from .extensions import queue
 from .extensions import scheduler
 from .models import User, Bill_Group, Bill
 from .forms import SignupForm, LoginForm
+from flask_login import login_user, current_user, logout_user
 
 bcrypt = Bcrypt(app)
 
@@ -52,22 +53,17 @@ def index():
 @app.route("/register", methods=['GET', 'POST'])
 def register():
 
+	if current_user.is_authenticated:
+		return redirect(url_for('index'))
+
 	home = WebDetails()
 	signupForm = SignupForm()
 
 	if signupForm.validate_on_submit():
 
-		queriedUserEmail = User.query.filter_by(email=signupForm.email.data).first()
-		queriedUserUsername = User.query.filter_by(username=signupForm.username.data).first()
+		# DO VALIDATION
 
 
-		if queriedUserEmail:
-			flash(f'An account already exists with this email! ({signupForm.email.data})', 'danger')
-			return redirect(url_for('register'))
-
-		if queriedUserUsername:
-			flash(f'An account already exists with this username! ({signupForm.username.data})', 'danger')
-			return redirect(url_for('register'))
 
 		passwordHash = bcrypt.generate_password_hash(signupForm.password.data).decode('utf-8')
 		user = User(username=signupForm.username.data, password=passwordHash, email=signupForm.email.data)
@@ -75,6 +71,7 @@ def register():
 		db.session.commit()
 		flash(f'Your account has been created! ({signupForm.email.data})', 'success')
 		return redirect(url_for('index'))
+
 
 
 
@@ -88,13 +85,53 @@ def register():
 @app.route("/login", methods=['GET', 'POST'])
 def login():
 
+	if current_user.is_authenticated:
+		return redirect(url_for('index'))
+
 	home = WebDetails()
 	loginForm = LoginForm()
 
 	if loginForm.validate_on_submit():
-		return redirect(url_for('index'))
-
-
-
+		user = User.query.filter_by(email=loginForm.email.data).first()
+		if user and bcrypt.check_password_hash(user.password, loginForm.password.data):
+			login_user(user, remember=loginForm.remember.data)
+			return redirect(url_for('index'))
+		else:
+			flash("Sign-In was Unsuccessful. Please check your email and password!", 'danger')
 
 	return render_template("login.html", home=home, form=loginForm)
+
+
+
+
+@app.route("/logout", methods=['GET', 'POST'])
+def logout():
+	logout_user()
+
+	flash("Successfully Logged Out!", 'success')
+	return redirect(url_for('index'))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm, RecaptchaField
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import DataRequired, Length, Email, EqualTo
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from .models import User
 
 
 class SignupForm(FlaskForm):
@@ -15,6 +16,23 @@ class SignupForm(FlaskForm):
 	recaptcha = RecaptchaField()
 
 	submit = SubmitField('Register')
+
+
+	def validate_email(self, email):
+
+		user = User.query.filter_by(email=email.data).first()
+
+		if user:
+			raise ValidationError('This email is already associated with an account. Please re-enter another email.')
+
+
+	def validate_username(self, username):
+
+		user = User.query.filter_by(username=username.data).first()
+
+		if user:
+			raise ValidationError('This username is already associated with an account. Please re-enter another email.')
+
 
 
 
