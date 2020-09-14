@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm, RecaptchaField
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from wtforms.widgets import TextArea
 from .models import User
 
 
@@ -46,3 +47,32 @@ class LoginForm(FlaskForm):
 	remember = BooleanField('Remember Me')
 
 	submit = SubmitField('Sign In')
+
+
+
+
+class BillGroupForm(FlaskForm):
+
+	name = StringField('Name', validators=[DataRequired(), Length(min=2, max=20)])
+
+	description = StringField('Description', widget=TextArea(), validators=[DataRequired(), Length(min=2, max=80)])
+
+	submit = SubmitField('Create')
+
+
+
+
+    # id = db.Column(db.Integer(), primary_key=True)
+    # group_id = db.Column(db.String(32), unique=True, nullable=False)
+    # name = db.Column(db.String(32), nullable=False, default="Bill Group")
+    # description = db.Column(db.String(128), default="My Bill Group")
+    # bills = db.relationship('Bill', backref='bill_group_id', lazy=True)
+    # user_id = db.Column(db.Integer(), db.ForeignKey('User.id'), nullable=False)
+
+
+
+
+
+
+
+

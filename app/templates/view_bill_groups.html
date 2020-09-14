@@ -2,37 +2,42 @@
 {% block content %}
 
 	<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
-      <h1 class="display-4">Dashboard</h1>
-      <p class="lead">Hello {{ current_user.username }}!</p>
+      <h1 class="display-4">Bill Groups</h1>
+      <p class="lead">Create, Edit, View and Delete your Bill Groups Here</p>
     </div>
 
 
 
 
 	<div class="container mx-auto text-center">
+		
 
 		<div class="border-top pt-3 mx-auto text-center"></div>
-			<!-- <a type="button" class="btn btn-primary" href="{{ url_for('billGroupCreate') }}" role="button">Create Group</a>
-			<a type="button" class="btn btn-warning">Update</button>
+		<a type="button" class="btn btn-primary" href="{{ url_for('billGroupCreate') }}" role="button" style="margin: 1rem;">Create Group</a>
+			<!-- <a type="button" class="btn btn-warning">Update</button>
 			<a type="button" class="btn btn-danger" href="bill-group" role="button">Delete</button> -->
 
+				{% if billGroups %}
 
-				<div class="card-deck mx-auto text-center" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); grid-gap: 1rem;">
 
+				<div class="card-deck mx-auto text-center" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); grid-gap: 1rem; margin-top: 1rem;"">
 
-					<a href="{{ url_for('bills') }}">
-					<div class="card text-white bg-success mb-3 mx-auto text-center" style="max-width: 20rem; height: 20rem; width: 20rem;">
-						<div class="card-header">Access all your bills here</div>
-						<div class="card-body text-center" style="margin: 60px">
-							<h2 class="card-title text-center">Bills</h2>
-							<p class="card-text text-center">Click to View Bills</p>
+					{% for billGroup in billGroups.items %}
+						<a href="{{ url_for('bills') }}?group_id={{ billGroup.id }}">
+						<div class="card text-white bg-dark mb-3 mx-auto text-center" style="max-width: 20rem; height: 20rem; width: 20rem;">
+							<div class="card-header"> </div>
+							<div class="card-body text-center" style="margin: 45px">
+								<h2 class="card-title text-center">{{ billGroup.name }}</h2>
+								<p class="card-text text-center">{{ billGroup.description }}</p>
+							</div>
+						</h2>
 						</div>
-					</h2>
-					</div>
-					</a>
+						</a>
+					{% endfor %}
+				{% endif %}
 
 
-					<a href="{{ url_for('billGroups') }}">
+					<!-- <a href="{{ url_for('billGroups') }}">
 					<div class="card text-white bg-primary mb-3 mx-auto text-center" style="max-width: 20rem; height: 20rem; width: 20rem;">
 						<div class="card-header">View your Organised Bill Groups</div>
 						<div class="card-body text-center" style="margin: 60px">
@@ -51,7 +56,7 @@
 							<p class="card-text">Click to View Account</p>
 						</div>
 					</div>
-					</a>
+					</a> -->
 
 
 				</div>

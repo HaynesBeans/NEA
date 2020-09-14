@@ -13,7 +13,8 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(64), unique=True, nullable=False)
     email_confirmed = db.Column(db.Boolean(), nullable=False, default=False)
     telegram_chat_id = db.Column(db.String(32), nullable=True, default=None)
-    bill_groups = db.relationship('Bill_Group', backref='owner', lazy=True)
+    bill_groups = db.relationship('Bill_Group', backref='owner', lazy="dynamic", uselist=True)
+    bills = db.relationship('Bill', backref='owner', lazy="dynamic", uselist=True)
 
 
     def __repr__(self):
@@ -26,16 +27,15 @@ class Bill_Group(db.Model):
 
 
     id = db.Column(db.Integer(), primary_key=True)
-    group_id = db.Column(db.String(32), unique=True, nullable=False)
     name = db.Column(db.String(32), nullable=False, default="Bill Group")
     description = db.Column(db.String(128), default="My Bill Group")
-    bills = db.relationship('Bill', backref='bill_group_id', lazy=True)
-    user_id = db.Column(db.Integer(), db.ForeignKey('User.id'), nullable=False)
+    bills = db.relationship('Bill', backref='bill_group_id', lazy="dynamic")
+    user_id = db.Column(db.Integer(), db.ForeignKey('User.id'))
 
 
 
     def __repr__(self):
-        return f"Bill_Group('{self.group_id}')"
+        return f"Bill_Group('{self.id}')"
 
 
 
@@ -45,7 +45,6 @@ class Bill(db.Model):
 
 
     id = db.Column(db.Integer(), primary_key=True)
-    bill_id = db.Column(db.String(32), unique=True, nullable=False)
     bill_job_id = db.Column(db.String(32), unique=True, nullable=False)
     name = db.Column(db.String(32), nullable=False, default="My Bill")
     description = db.Column(db.String(128), default="My Bill Description")
@@ -53,13 +52,14 @@ class Bill(db.Model):
     notification_type = db.Column(db.String(16))
     # bill_group_id = db.Column(db.Integer(), db.ForeignKey('bill_group.id'), nullable=False)
     bill_group = db.Column(db.ForeignKey('Bill_Group.id'), nullable=False)
+    user = db.Column(db.ForeignKey('User.id'), nullable=False)
     
 
 
 
 
     def __repr__(self):
-        return f"Bill('{self.bill_id} {self.bill_job_id}')"
+        return f"Bill('{self.id} {self.bill_job_id}')"
 
 
 

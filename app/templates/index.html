@@ -8,11 +8,23 @@
 <div class="parent-div">
   <div class="center-div">
   	<main role="main" class="inner cover">
+
+  		{% if current_user.is_authenticated %}
+        	<h1 class="cover-heading">Hello {{ current_user.username }}!</h1>
+        	<div class="border-top pt-3"></div>
+        	<p class="lead">
+
+          		<a href="{{ url_for('dashboard') }}" class="btn btn-lg btn-secondary">Dashboard</a>
+        	</p>
+        {% else %}
+
         <h1 class="cover-heading">{{ home.name }}</h1>
         <p class="lead">{{ home.description }}</p>
         <p class="lead">
           <a href="{{ url_for('register') }}" class="btn btn-lg btn-secondary">Register</a>
         </p>
+
+      	{% endif %}
       </main>
   </div>
 </div>

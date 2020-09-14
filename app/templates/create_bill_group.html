@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+<!-- Default form contact -->
+<div class="container">
+<form class="text-center border border-light p-5" action="" method="POST">
+	{{ form.csrf_token }}
+
+    <p class="h4 mb-4">Create Bill Group</p>
+
+    <!-- Name -->
+    <div class="form-group">
+
+                    {% if form.name.errors %}
+                        {{ form.name(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.name.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.name(class="form-control mb-4", placeholder="Name") }}
+                    {% endif %}
+    </div>
+    <!-- Email -->
+    <div class="form-group">
+                    {% if form.description.errors %}
+                        {{ form.description(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.description.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.description(class="form-control rounded-0", rows="2", placeholder="Description") }}
+                    {% endif %}
+    </div>
+    <!-- Send button -->
+    <div class="form-group">
+                {{ form.submit(class="btn btn-dark") }}
+    </div>
+
+</form>
+<!-- Default form contact -->
+</div>
+
+
+
+{% endblock content %}
