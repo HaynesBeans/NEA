@@ -1,0 +1,121 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+      <h1 class="display-4">Account</h1>
+      <p class="lead">Account Details for {{ current_user.username }}!</p>
+    </div>
+
+
+
+
+	<div class="container mx-auto text-center">
+
+		<div class="border-top pt-3 mx-auto text-center"></div>
+
+		<div class="row justify-content-center mt-3">
+            <div class="col-md-12">
+                <div v-pre="">
+        <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Notification Details</h5>
+                </div>
+
+
+
+                {% if current_user.email_confirmed == True %}
+
+
+
+                <div class="alert alert-info text-center">
+                        <strong>Email</strong><br><br>
+                        <span class="font-24 font-weight-bold"><b>{{ current_user.email }}</b></span><br>
+                        <span class="label label-primary">Confirmed</span>
+
+                        <!-- <a href="#" data-id="z3vvq7" class="copy-clipboard btn btn-secondary btn-sm mt-2 ml-2"><i class="far fa-copy"></i>Verify</a><br> -->
+                </div>
+
+
+                {% else %}
+
+
+                <div class="alert alert-danger text-center">
+                        <strong>Email</strong><br>
+                        <span class="font-24 font-weight-bold">{{ current_user.email }}</span><br><br>
+
+
+                        <span class="label label-primary">Not Confirmed</span><br>
+                        <a href="#" data-id="z3vvq7" class="copy-clipboard btn btn-secondary btn-sm mt-2 ml-2"><i class="far fa-copy"></i>Verify</a><br>
+                </div>
+
+
+
+                {% endif %}
+
+
+
+
+
+                {% if current_user.telegram_chat_id != None %}
+
+
+
+                <div class="alert alert-success text-center">
+                        <strong>Telegram</strong><br><br>
+                        <span class="font-24 font-weight-bold"><b>Telegram Connected</b></span><br>
+                        <span class="label label-primary">Confirmed</span>
+
+                        <!-- <a href="#" data-id="z3vvq7" class="copy-clipboard btn btn-secondary btn-sm mt-2 ml-2"><i class="far fa-copy"></i>Verify</a><br> -->
+                </div>
+
+
+                {% else %}
+
+
+                <div class="alert alert-info text-center">
+                        <strong>Telegram</strong><br>
+                        <span class="font-24 font-weight-bold">Not Currently Connected</span><br>
+
+
+                        <a href="#" data-id="z3vvq7" class="copy-clipboard btn btn-secondary btn-sm mt-2 ml-2"><i class="far fa-copy"></i>Link Telegram</a><br>
+                </div>
+
+
+
+                {% endif %}
+
+
+                <div class="card-body">
+                    <p class="text-center text-muted">You methods of Notification allow you to receive alerts about your bills.
+                            These details will have to be confirmed properly before use.<br>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Your Profile</h5>
+                </div>
+
+                <div class="card-body">
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+            </div>
+        </div>
+	</div>
+
+{% endblock content %}

@@ -1,4 +1,5 @@
 from app import app
+from datetime import datetime
 from flask_bcrypt import Bcrypt
 from flask import request
 from flask import render_template
@@ -13,6 +14,7 @@ from .extensions import queue
 from .extensions import scheduler
 from .models import User, Bill_Group, Bill
 from .forms import SignupForm, LoginForm, BillGroupForm
+from .token import generate_confirmation_token, confirm_token
 from flask_login import login_user, current_user, logout_user, login_required
 
 bcrypt = Bcrypt(app)
@@ -26,7 +28,7 @@ class WebDetails():
 
 
 		self.name = "Bills"
-		self.description = "lorem ipsum brandon haynes the beast of the nation test test test."
+		self.description = "The Lightweight, Simple Solution to Managing Bills!"
 		self.colour = "#444444"
 
 
@@ -137,59 +139,89 @@ def dashboard():
 def account():
 	home = WebDetails()
 	
-	return render_template("index.html", home=home)
+	return render_template("account.html", home=home)
 
 
 
 
-@app.route("/bill-groups", methods=['GET', 'POST'])
+@app.route("/send_verification_email", methods=['GET'])
 @login_required
-def billGroups():
-
-	print(current_user.bill_groups)
-
+def send_verification_email():
 	home = WebDetails()
+	current_time = datetime.now()
 
-	page = request.args.get('page', 1, type=int)
+	if current_user.email_confirmed == True:
+		flash("Email already verified.", 'success')
+		return redirect(url_for('index'))
 
-	# billGroupsList = current_user.bill_groups.paginate(page, per_page=12)
+
+
+	if current_user.last_verify_sent:
+		print(current_time)
+
+		if (current_time - current_user.last_verify_sent).total_seconds() < 600:
+			flash("Verification Email Send Error. Please wait a total of 10 minutes before a re-send email.", 'danger')
+			return redirect(url_for('index'))
+
+	userToken = generate_confirmation_token(current_user.email)
+	print(userToken)
+
+	current_user.last_verify_sent = current_time
+	db.session.add(current_user)
+	db.session.commit()
+
+	flash("Email Verification Sent. Please click the link in email to confirm.", 'success')
+	return redirect(url_for('index'))
+
+
+
+
+
+
+@app.route("/verify_email/<string:token>", methods=['GET'])
+def verify_email(token):
+	home = WebDetails()
 
 	try:
-		billGroupsList = current_user.bill_groups.paginate(page, per_page=12)
+		print("hello")
+		email = confirm_token(token)
+
+		if email == False:
+			flash('Invalid Verification Token.', 'danger')
+
+			return redirect(url_for('account'))
 	except:
-		return render_template("view_bill_groups.html", home=home, billGroups=None)
+		flash('The confirmation link is invalid or has expired.', 'danger')
+		return redirect(url_for('account'))
 
 
-	print(billGroupsList.items)
-
-	
-	return render_template("view_bill_groups.html", home=home, billGroups=billGroupsList)
+	# if email == False:
+	# 	return redirect(url_for('account'))
 
 
 
-@app.route("/bills", methods=['GET', 'POST'])
-@login_required
-def bills():
-	home = WebDetails()
+	user = User.query.filter_by(email=email).first_or_404()
 
-	group_id = request.args.get('group_id', None, type=int)
-
-	if group_id:
-
-		bills = Bill.query.filter_by(bill_group=group_id, user=current_user.id).all()
-
-		if len(bills) == 0:
-			abort(403)
-
+	if user.email_confirmed:
+		flash("Email already verified.", 'success')
 	else:
+		user.email_confirmed = True
+		user.confirmed_on = datetime.now()
+		db.session.add(user)
+		db.session.commit()
+		flash('You have confirmed your account. Thanks!', 'success')
+		
+	return redirect(url_for('account'))
 
-		bills = Bill.query.filter_by(user=current_user.id).all()
 
-		if len(bills) == 0:
-			return render_template("bills.html", home=home, bills=None)
 
-	
-	return render_template("bills.html", home=home, bills=bills)
+
+
+
+
+
+
+
 
 
 
@@ -220,6 +252,78 @@ def billCreate():
 	
 	return render_template("index.html", home=home)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+@app.route("/bills", methods=['GET', 'POST'])
+@login_required
+def bills():
+	home = WebDetails()
+
+	group_id = request.args.get('group_id', None, type=int)
+
+	if group_id:
+
+		bills = Bill.query.filter_by(bill_group=group_id, user=current_user.id).all()
+
+		if len(bills) == 0:
+			return render_template("bills.html", home=home, bills=None)
+
+	else:
+
+		bills = Bill.query.filter_by(user=current_user.id).all()
+
+		if len(bills) == 0:
+			return render_template("bills.html", home=home, bills=None)
+
+	
+	return render_template("bills.html", home=home, bills=bills)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@app.route("/bill-groups", methods=['GET', 'POST'])
+@login_required
+def billGroups():
+
+	print(current_user.bill_groups)
+
+	home = WebDetails()
+
+	page = request.args.get('page', 1, type=int)
+
+	# billGroupsList = current_user.bill_groups.paginate(page, per_page=12)
+
+	try:
+		billGroupsList = current_user.bill_groups.paginate(page, per_page=12)
+	except:
+		return render_template("view_bill_groups.html", home=home, billGroups=None)
+
+
+	print(billGroupsList.items)
+
+	
+	return render_template("view_bill_groups.html", home=home, billGroups=billGroupsList)
 
 
 

@@ -1,6 +1,7 @@
 from .extensions import db
 from flask_login import UserMixin
 import datetime
+from app import app
 
 class User(db.Model, UserMixin):
 
@@ -12,6 +13,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(256), nullable=False)
     email = db.Column(db.String(64), unique=True, nullable=False)
     email_confirmed = db.Column(db.Boolean(), nullable=False, default=False)
+    last_verify_sent = db.Column(db.DateTime(), default=None)
     telegram_chat_id = db.Column(db.String(32), nullable=True, default=None)
     bill_groups = db.relationship('Bill_Group', backref='owner', lazy="dynamic", uselist=True)
     bills = db.relationship('Bill', backref='owner', lazy="dynamic", uselist=True)

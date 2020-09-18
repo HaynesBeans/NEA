@@ -62,6 +62,17 @@ class BillGroupForm(FlaskForm):
 
 
 
+class Bill(FlaskForm):
+
+	name = StringField('Name', validators=[DataRequired(), Length(min=2, max=20)])
+
+	description = StringField('Description', widget=TextArea(), validators=[DataRequired(), Length(min=2, max=80)])
+
+	submit = SubmitField('Create')
+
+
+
+
     # id = db.Column(db.Integer(), primary_key=True)
     # group_id = db.Column(db.String(32), unique=True, nullable=False)
     # name = db.Column(db.String(32), nullable=False, default="Bill Group")
